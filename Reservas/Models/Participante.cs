@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Reservas.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Reservas.Models
@@ -14,6 +15,6 @@ namespace Reservas.Models
         [Required]
         public TipoParticipante Tipo { get; set; }
         public ICollection<Reserva> Reservas { get; set; }
-        public ICollection<ParticipanteAtividade> ParticipanteAtividades { get; set; }
+        public ICollection<EventoParticipante> EventoParticipantes { get; set; }
     }
 }

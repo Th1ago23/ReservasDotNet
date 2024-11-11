@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Reservas.Data;
@@ -10,21 +6,24 @@ using Reservas.Models;
 
 namespace Reservas.Controllers
 {
-    public class EventosController : Controller
+    public class ParticipantesController : Controller
     {
         private readonly ReservasContext _context;
         private readonly ILogger<EventosController> _logger;
-        public EventosController(ReservasContext context, ILogger<EventosController> logger)
+
+        public ParticipantesController(ReservasContext context, ILogger<EventosController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
+        // GET: Participantes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Eventos.ToListAsync());
+            return View(await _context.Participantes.ToListAsync());
         }
 
+        // GET: Participantes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,52 +31,59 @@ namespace Reservas.Controllers
                 return NotFound();
             }
 
-            var evento = await _context.Eventos
-                .FirstOrDefaultAsync(m => m.EventoId == id);
-            if (evento == null)
+            var participante = await _context.Participantes
+                .FirstOrDefaultAsync(m => m.IdParticipante == id);
+            if (participante == null)
             {
                 return NotFound();
             }
 
-            return View(evento);
+            return View(participante);
         }
 
+        // GET: Participantes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-
+        // POST: Participantes/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventoId,Nome,Descricao,DataHora,PrecoIngresso")] Evento evento)
+        public async Task<IActionResult> Create([Bind("IdParticipante,Nome,Email,Tipo")] Participante participante)
         {
-            ModelState.Remove("Reservas");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(evento);
+                    _context.Add(participante);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Erro ao salvar o evento: " + ex.Message);
-                    ModelState.AddModelError(string.Empty, "Ocorreu um erro ao salvar o evento.");
+                    // Loga o erro se ocorrer uma exceção ao salvar
+                    _logger.LogError("Erro ao salvar o participante: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Ocorreu um erro ao salvar o participante.");
                 }
             }
             else
             {
+                // Loga detalhadamente os erros de ModelState
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                 {
                     _logger.LogError("Erro de ModelState: " + error.ErrorMessage);
                 }
             }
 
-            return View(evento);
+            // Retorna à view com os eventos para seleção e os erros de validação
+            ViewBag.Eventos = new SelectList(_context.Eventos, "EventoId", "Nome");
+            return View(participante);
         }
 
+        // GET: Participantes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -85,19 +91,22 @@ namespace Reservas.Controllers
                 return NotFound();
             }
 
-            var evento = await _context.Eventos.FindAsync(id);
-            if (evento == null)
+            var participante = await _context.Participantes.FindAsync(id);
+            if (participante == null)
             {
                 return NotFound();
             }
-            return View(evento);
+            return View(participante);
         }
 
+        // POST: Participantes/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventoId,Nome,Descricao,DataHora,PrecoIngresso")] Evento evento)
+        public async Task<IActionResult> Edit(int id, [Bind("IdParticipante,Nome,Email,Tipo")] Participante participante)
         {
-            if (id != evento.EventoId)
+            if (id != participante.IdParticipante)
             {
                 return NotFound();
             }
@@ -106,12 +115,12 @@ namespace Reservas.Controllers
             {
                 try
                 {
-                    _context.Update(evento);
+                    _context.Update(participante);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EventoExists(evento.EventoId))
+                    if (!ParticipanteExists(participante.IdParticipante))
                     {
                         return NotFound();
                     }
@@ -122,9 +131,10 @@ namespace Reservas.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(evento);
+            return View(participante);
         }
 
+        // GET: Participantes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -132,33 +142,34 @@ namespace Reservas.Controllers
                 return NotFound();
             }
 
-            var evento = await _context.Eventos
-                .FirstOrDefaultAsync(m => m.EventoId == id);
-            if (evento == null)
+            var participante = await _context.Participantes
+                .FirstOrDefaultAsync(m => m.IdParticipante == id);
+            if (participante == null)
             {
                 return NotFound();
             }
 
-            return View(evento);
+            return View(participante);
         }
 
+        // POST: Participantes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var evento = await _context.Eventos.FindAsync(id);
-            if (evento != null)
+            var participante = await _context.Participantes.FindAsync(id);
+            if (participante != null)
             {
-                _context.Eventos.Remove(evento);
+                _context.Participantes.Remove(participante);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EventoExists(int id)
+        private bool ParticipanteExists(int id)
         {
-            return _context.Eventos.Any(e => e.EventoId == id);
+            return _context.Participantes.Any(e => e.IdParticipante == id);
         }
     }
 }

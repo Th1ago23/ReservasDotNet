@@ -10,21 +10,22 @@ using Reservas.Models;
 
 namespace Reservas.Controllers
 {
-    public class EventosController : Controller
+    public class LocalsController : Controller
     {
         private readonly ReservasContext _context;
-        private readonly ILogger<EventosController> _logger;
-        public EventosController(ReservasContext context, ILogger<EventosController> logger)
+
+        public LocalsController(ReservasContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
+        // GET: Locals
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Eventos.ToListAsync());
+            return View(await _context.Local.ToListAsync());
         }
 
+        // GET: Locals/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,52 +33,39 @@ namespace Reservas.Controllers
                 return NotFound();
             }
 
-            var evento = await _context.Eventos
-                .FirstOrDefaultAsync(m => m.EventoId == id);
-            if (evento == null)
+            var local = await _context.Local
+                .FirstOrDefaultAsync(m => m.IdLocal == id);
+            if (local == null)
             {
                 return NotFound();
             }
 
-            return View(evento);
+            return View(local);
         }
 
+        // GET: Locals/Create
         public IActionResult Create()
         {
             return View();
         }
 
-
+        // POST: Locals/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventoId,Nome,Descricao,DataHora,PrecoIngresso")] Evento evento)
+        public async Task<IActionResult> Create([Bind("IdLocal,Cidade,Bairro,Acessibilidade,EstacionamentoDisponivel,Cep")] Local local)
         {
-            ModelState.Remove("Reservas");
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Add(evento);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Erro ao salvar o evento: " + ex.Message);
-                    ModelState.AddModelError(string.Empty, "Ocorreu um erro ao salvar o evento.");
-                }
+                _context.Add(local);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    _logger.LogError("Erro de ModelState: " + error.ErrorMessage);
-                }
-            }
-
-            return View(evento);
+            return View(local);
         }
 
+        // GET: Locals/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -85,19 +73,22 @@ namespace Reservas.Controllers
                 return NotFound();
             }
 
-            var evento = await _context.Eventos.FindAsync(id);
-            if (evento == null)
+            var local = await _context.Local.FindAsync(id);
+            if (local == null)
             {
                 return NotFound();
             }
-            return View(evento);
+            return View(local);
         }
 
+        // POST: Locals/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventoId,Nome,Descricao,DataHora,PrecoIngresso")] Evento evento)
+        public async Task<IActionResult> Edit(int id, [Bind("IdLocal,Cidade,Bairro,Acessibilidade,EstacionamentoDisponivel,Cep")] Local local)
         {
-            if (id != evento.EventoId)
+            if (id != local.IdLocal)
             {
                 return NotFound();
             }
@@ -106,12 +97,12 @@ namespace Reservas.Controllers
             {
                 try
                 {
-                    _context.Update(evento);
+                    _context.Update(local);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EventoExists(evento.EventoId))
+                    if (!LocalExists(local.IdLocal))
                     {
                         return NotFound();
                     }
@@ -122,9 +113,10 @@ namespace Reservas.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(evento);
+            return View(local);
         }
 
+        // GET: Locals/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -132,33 +124,34 @@ namespace Reservas.Controllers
                 return NotFound();
             }
 
-            var evento = await _context.Eventos
-                .FirstOrDefaultAsync(m => m.EventoId == id);
-            if (evento == null)
+            var local = await _context.Local
+                .FirstOrDefaultAsync(m => m.IdLocal == id);
+            if (local == null)
             {
                 return NotFound();
             }
 
-            return View(evento);
+            return View(local);
         }
 
+        // POST: Locals/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var evento = await _context.Eventos.FindAsync(id);
-            if (evento != null)
+            var local = await _context.Local.FindAsync(id);
+            if (local != null)
             {
-                _context.Eventos.Remove(evento);
+                _context.Local.Remove(local);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EventoExists(int id)
+        private bool LocalExists(int id)
         {
-            return _context.Eventos.Any(e => e.EventoId == id);
+            return _context.Local.Any(e => e.IdLocal == id);
         }
     }
 }

@@ -12,7 +12,7 @@ using Reservas.Data;
 namespace Reservas.Migrations
 {
     [DbContext(typeof(ReservasContext))]
-    [Migration("20241110173518_initial")]
+    [Migration("20241110231825_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -24,32 +24,6 @@ namespace Reservas.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Reservas.Models.Atividade", b =>
-                {
-                    b.Property<int>("IdAtividade")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAtividade"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("EventoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NomeAtividade")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("IdAtividade");
-
-                    b.HasIndex("EventoId");
-
-                    b.ToTable("Atividades");
-                });
 
             modelBuilder.Entity("Reservas.Models.Evento", b =>
                 {
@@ -66,20 +40,67 @@ namespace Reservas.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Local")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("LocalId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PrecoIngresso")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("PrecoIngresso")
+                        .HasColumnType("float");
 
                     b.HasKey("EventoId");
 
+                    b.HasIndex("LocalId");
+
                     b.ToTable("Eventos");
+                });
+
+            modelBuilder.Entity("Reservas.Models.EventoParticipante", b =>
+                {
+                    b.Property<int>("EventoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ParticipanteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EventoId", "ParticipanteId");
+
+                    b.HasIndex("ParticipanteId");
+
+                    b.ToTable("EventoParticipantes");
+                });
+
+            modelBuilder.Entity("Reservas.Models.Local", b =>
+                {
+                    b.Property<int>("IdLocal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdLocal"));
+
+                    b.Property<bool>("Acessibilidade")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Cep")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EstacionamentoDisponivel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdLocal");
+
+                    b.ToTable("Local");
                 });
 
             modelBuilder.Entity("Reservas.Models.Participante", b =>
@@ -106,21 +127,6 @@ namespace Reservas.Migrations
                     b.ToTable("Participantes");
                 });
 
-            modelBuilder.Entity("Reservas.Models.ParticipanteAtividade", b =>
-                {
-                    b.Property<int>("IdParticipante")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdAtividade")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdParticipante", "IdAtividade");
-
-                    b.HasIndex("IdAtividade");
-
-                    b.ToTable("ParticipanteAtividades");
-                });
-
             modelBuilder.Entity("Reservas.Models.Reserva", b =>
                 {
                     b.Property<int>("ReservaId")
@@ -144,28 +150,32 @@ namespace Reservas.Migrations
                     b.ToTable("Reservas");
                 });
 
-            modelBuilder.Entity("Reservas.Models.Atividade", b =>
+            modelBuilder.Entity("Reservas.Models.Evento", b =>
                 {
-                    b.HasOne("Reservas.Models.Evento", null)
-                        .WithMany("Atividades")
-                        .HasForeignKey("EventoId");
+                    b.HasOne("Reservas.Models.Local", "Local")
+                        .WithMany("Eventos")
+                        .HasForeignKey("LocalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Local");
                 });
 
-            modelBuilder.Entity("Reservas.Models.ParticipanteAtividade", b =>
+            modelBuilder.Entity("Reservas.Models.EventoParticipante", b =>
                 {
-                    b.HasOne("Reservas.Models.Atividade", "Atividade")
-                        .WithMany("ParticipanteAtividades")
-                        .HasForeignKey("IdAtividade")
+                    b.HasOne("Reservas.Models.Evento", "Evento")
+                        .WithMany("EventoParticipantes")
+                        .HasForeignKey("EventoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Reservas.Models.Participante", "Participante")
-                        .WithMany("ParticipanteAtividades")
-                        .HasForeignKey("IdParticipante")
+                        .WithMany("EventoParticipantes")
+                        .HasForeignKey("ParticipanteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Atividade");
+                    b.Navigation("Evento");
 
                     b.Navigation("Participante");
                 });
@@ -189,21 +199,21 @@ namespace Reservas.Migrations
                     b.Navigation("Participante");
                 });
 
-            modelBuilder.Entity("Reservas.Models.Atividade", b =>
-                {
-                    b.Navigation("ParticipanteAtividades");
-                });
-
             modelBuilder.Entity("Reservas.Models.Evento", b =>
                 {
-                    b.Navigation("Atividades");
+                    b.Navigation("EventoParticipantes");
 
                     b.Navigation("Reservas");
                 });
 
+            modelBuilder.Entity("Reservas.Models.Local", b =>
+                {
+                    b.Navigation("Eventos");
+                });
+
             modelBuilder.Entity("Reservas.Models.Participante", b =>
                 {
-                    b.Navigation("ParticipanteAtividades");
+                    b.Navigation("EventoParticipantes");
 
                     b.Navigation("Reservas");
                 });

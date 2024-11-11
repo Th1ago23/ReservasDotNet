@@ -12,20 +12,20 @@ namespace Reservas.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Eventos",
+                name: "Local",
                 columns: table => new
                 {
-                    EventoId = table.Column<int>(type: "int", nullable: false)
+                    IdLocal = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DataHora = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Local = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PrecoIngresso = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Cidade = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bairro = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Acessibilidade = table.Column<bool>(type: "bit", nullable: false),
+                    EstacionamentoDisponivel = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Cep = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Eventos", x => x.EventoId);
+                    table.PrimaryKey("PK_Local", x => x.IdLocal);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,23 +44,50 @@ namespace Reservas.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Atividades",
+                name: "Eventos",
                 columns: table => new
                 {
-                    IdAtividade = table.Column<int>(type: "int", nullable: false)
+                    EventoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NomeAtividade = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EventoId = table.Column<int>(type: "int", nullable: true)
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataHora = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PrecoIngresso = table.Column<double>(type: "float", nullable: false),
+                    LocalId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Atividades", x => x.IdAtividade);
+                    table.PrimaryKey("PK_Eventos", x => x.EventoId);
                     table.ForeignKey(
-                        name: "FK_Atividades_Eventos_EventoId",
+                        name: "FK_Eventos_Local_LocalId",
+                        column: x => x.LocalId,
+                        principalTable: "Local",
+                        principalColumn: "IdLocal",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventoParticipantes",
+                columns: table => new
+                {
+                    EventoId = table.Column<int>(type: "int", nullable: false),
+                    ParticipanteId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventoParticipantes", x => new { x.EventoId, x.ParticipanteId });
+                    table.ForeignKey(
+                        name: "FK_EventoParticipantes_Eventos_EventoId",
                         column: x => x.EventoId,
                         principalTable: "Eventos",
-                        principalColumn: "EventoId");
+                        principalColumn: "EventoId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EventoParticipantes_Participantes_ParticipanteId",
+                        column: x => x.ParticipanteId,
+                        principalTable: "Participantes",
+                        principalColumn: "IdParticipante",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,39 +116,15 @@ namespace Reservas.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ParticipanteAtividades",
-                columns: table => new
-                {
-                    IdParticipante = table.Column<int>(type: "int", nullable: false),
-                    IdAtividade = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ParticipanteAtividades", x => new { x.IdParticipante, x.IdAtividade });
-                    table.ForeignKey(
-                        name: "FK_ParticipanteAtividades_Atividades_IdAtividade",
-                        column: x => x.IdAtividade,
-                        principalTable: "Atividades",
-                        principalColumn: "IdAtividade",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ParticipanteAtividades_Participantes_IdParticipante",
-                        column: x => x.IdParticipante,
-                        principalTable: "Participantes",
-                        principalColumn: "IdParticipante",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_EventoParticipantes_ParticipanteId",
+                table: "EventoParticipantes",
+                column: "ParticipanteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Atividades_EventoId",
-                table: "Atividades",
-                column: "EventoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ParticipanteAtividades_IdAtividade",
-                table: "ParticipanteAtividades",
-                column: "IdAtividade");
+                name: "IX_Eventos_LocalId",
+                table: "Eventos",
+                column: "LocalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservas_EventoId",
@@ -138,19 +141,19 @@ namespace Reservas.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ParticipanteAtividades");
+                name: "EventoParticipantes");
 
             migrationBuilder.DropTable(
                 name: "Reservas");
 
             migrationBuilder.DropTable(
-                name: "Atividades");
+                name: "Eventos");
 
             migrationBuilder.DropTable(
                 name: "Participantes");
 
             migrationBuilder.DropTable(
-                name: "Eventos");
+                name: "Local");
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Reservas.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Reservas.Models
 {
@@ -10,9 +12,11 @@ namespace Reservas.Models
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public DateTime DataHora { get; set; }
-        public string Local { get; set; }
-        public decimal PrecoIngresso { get; set; }
+        public double PrecoIngresso { get; set; }
+        [Required]
+        public int LocalId { get; set; }
+        public Local Local { get; set; }
         public ICollection<Reserva> Reservas { get; set; }
-        public ICollection<Atividade> Atividades { get; set; }
+        public ICollection<EventoParticipante> EventoParticipantes { get; set; }
     }
 }
