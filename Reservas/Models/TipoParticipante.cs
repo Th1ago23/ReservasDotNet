@@ -2,8 +2,9 @@
 {
     public enum TipoParticipante
     {
-        Colaborador,
-        Participante,
+        Comediante,
+        Cantor,
         Palestrante
+
     }
 }

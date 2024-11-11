@@ -47,6 +47,9 @@ namespace Reservas.Migrations
                     b.Property<double>("PrecoIngresso")
                         .HasColumnType("float");
 
+                    b.Property<int>("TotalPublico")
+                        .HasColumnType("int");
+
                     b.HasKey("EventoId");
 
                     b.HasIndex("LocalId");
@@ -91,9 +94,8 @@ namespace Reservas.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EstacionamentoDisponivel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("EstacionamentoDisponivel")
+                        .HasColumnType("bit");
 
                     b.HasKey("IdLocal");
 

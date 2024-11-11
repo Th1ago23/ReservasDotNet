@@ -20,7 +20,7 @@ namespace Reservas.Migrations
                     Cidade = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Bairro = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Acessibilidade = table.Column<bool>(type: "bit", nullable: false),
-                    EstacionamentoDisponivel = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EstacionamentoDisponivel = table.Column<bool>(type: "bit", nullable: false),
                     Cep = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -53,6 +53,7 @@ namespace Reservas.Migrations
                     Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DataHora = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PrecoIngresso = table.Column<double>(type: "float", nullable: false),
+                    TotalPublico = table.Column<int>(type: "int", nullable: false),
                     LocalId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

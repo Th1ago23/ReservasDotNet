@@ -13,6 +13,7 @@ namespace Reservas.Models
         public string Descricao { get; set; }
         public DateTime DataHora { get; set; }
         public double PrecoIngresso { get; set; }
+        public int TotalPublico { get; set; }
         [Required]
         public int LocalId { get; set; }
         public Local Local { get; set; }

@@ -12,7 +12,7 @@ namespace Reservas.Models
         public string Bairro { get; set; }
         [Required]
         public bool Acessibilidade { get; set; }
-        public string EstacionamentoDisponivel { get; set; }
+        public bool EstacionamentoDisponivel { get; set; }
         public int Cep { get; set; }
         public ICollection<Evento> Eventos { get; set; }
     }

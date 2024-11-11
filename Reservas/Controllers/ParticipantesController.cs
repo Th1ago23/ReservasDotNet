@@ -54,6 +54,8 @@ namespace Reservas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdParticipante,Nome,Email,Tipo")] Participante participante)
         {
+            ModelState.Remove("Reservas");
+            ModelState.Remove("EventoParticipantes");
             if (ModelState.IsValid)
             {
                 try
@@ -86,6 +88,8 @@ namespace Reservas.Controllers
         // GET: Participantes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
+
             if (id == null)
             {
                 return NotFound();
@@ -106,6 +110,17 @@ namespace Reservas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdParticipante,Nome,Email,Tipo")] Participante participante)
         {
+            ModelState.Remove("Reservas");
+            ModelState.Remove("EventoParticipantes");
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+                return View(participante);
+            }
+
             if (id != participante.IdParticipante)
             {
                 return NotFound();

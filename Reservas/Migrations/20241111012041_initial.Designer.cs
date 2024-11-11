@@ -12,7 +12,7 @@ using Reservas.Data;
 namespace Reservas.Migrations
 {
     [DbContext(typeof(ReservasContext))]
-    [Migration("20241110231825_initial")]
+    [Migration("20241111012041_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -49,6 +49,9 @@ namespace Reservas.Migrations
 
                     b.Property<double>("PrecoIngresso")
                         .HasColumnType("float");
+
+                    b.Property<int>("TotalPublico")
+                        .HasColumnType("int");
 
                     b.HasKey("EventoId");
 
@@ -94,9 +97,8 @@ namespace Reservas.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EstacionamentoDisponivel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("EstacionamentoDisponivel")
+                        .HasColumnType("bit");
 
                     b.HasKey("IdLocal");
 

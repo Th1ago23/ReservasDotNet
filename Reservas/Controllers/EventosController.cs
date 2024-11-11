@@ -53,6 +53,8 @@ namespace Reservas.Controllers
         public async Task<IActionResult> Create([Bind("EventoId,Nome,Descricao,DataHora,PrecoIngresso")] Evento evento)
         {
             ModelState.Remove("Reservas");
+            ModelState.Remove("EventoParticipantes");
+            ModelState.Remove("Local");
             if (ModelState.IsValid)
             {
                 try
@@ -80,6 +82,7 @@ namespace Reservas.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
@@ -97,6 +100,10 @@ namespace Reservas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EventoId,Nome,Descricao,DataHora,PrecoIngresso")] Evento evento)
         {
+            ModelState.Remove("Reservas");
+            ModelState.Remove("EventoParticipantes");
+            ModelState.Remove("Local");
+
             if (id != evento.EventoId)
             {
                 return NotFound();
