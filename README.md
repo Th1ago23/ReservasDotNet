@@ -30,19 +30,12 @@ Bem-vindo ao sistema definitivo para gerenciamento de eventos! Com funcionalidad
 - Evento.cs
 - Reserva.cs
 - Participante.cs
-- Atividade.cs
-- ParticipanteAtividade.cs
+- Local.cs
+- EventoParticipante.cs
 
 ### Data
 - Context.cs
 
-### Services
-- EventoService.cs
-- ReservaService.cs
-- ParticipanteService.cs
-- AtividadeService.cs
-
-- Program.cs
 
 ## 🛠️ Tecnologias Utilizadas
 - .NET Core 6
