@@ -1,4 +1,4 @@
-# 🎉 Sistema de Reserva de Eventos e Atividades 🎉
+# 🎉 Sistema de Reserva de Eventos 🎉
 
 Bem-vindo ao sistema definitivo para gerenciamento de eventos! Com funcionalidades inovadoras e uma interface amigável, organizar e participar de eventos nunca foi tão fácil e divertido.
 
